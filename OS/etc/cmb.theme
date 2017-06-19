@@ -1,2 +1,0 @@
--- Theme file for: Component Methods Browser
-{titleBar={"black","lightBlue"},desktopAccept={"lime","gray"},highlight={"lightBlue","gray"},desktopError={"red","gray"},lua={text={"white","gray"},delims={"lime","gray"},operators={"magenta","gray"},comment={"silver","gray"},numbers={"red","gray"},functs={"lightblue","gray"},strings={"yellow","gray"},optionals={"silver","gray"},consts={"lightblue","gray"}},menu={normal={"black","lightBlue"},highlight={"black","orange"}},desktopWarning={"yellow","gray"},desktopGray={"silver","gray"},desktop={"white","gray"}}
