@@ -10,15 +10,12 @@ local gui=gml.create("center","center",32,19)
 local label=gui:addLabel("center",2,13,"Hello, World!")
 label:hide()
 
-local function toggleLabel()
-  if label.visible then
-    label:hide()
-  else
-    label:show()
-  end
-end
 
 local textField=gui:addTextField("center",4,18)
+
+local function toggleLabel()
+  label.text = textField.text
+end
 
 local button1=gui:addButton(4,6,10,1,"Toggle",toggleLabel)
 local button2=gui:addButton(-4,6,10,1,"Close",gui.close)
