@@ -18,7 +18,7 @@ local repo,target
 
 local args={...}
 
-if #args<1 or #args>2 then
+if #args<1 or #args>3 then
   print("Usage: gitrepo <repo> [<targetdir>]]\nrepo should be the owner/repo, ex, \"OpenPrograms/Gopher-Programs\"\ntargetdir is an optional local path to download to, default will be /tmp/<repo>/")
   return
 end
@@ -129,6 +129,9 @@ for i=1,#dirs do
 end
 
 local replaceMode="ask"
+if args[3] == "y" then
+  replaceMode="always"
+end
 for i=1,#files do
   local replace=nil
   if filesystem.exists(target..files[i]) then
