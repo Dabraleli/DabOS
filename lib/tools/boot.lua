@@ -1,7 +1,7 @@
 -- called from /init.lua
 local raw_loadfile = ...
 
-_G._OSVERSION = "OpenOS 1.6.1, DaOS 0.1"
+_G._OSVERSION = "OpenOS 1.6.1, DabOS 0.1"
 
 local component = component
 local computer = computer

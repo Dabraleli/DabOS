@@ -30,7 +30,7 @@ if not repo:match("^[%w-.]*/[%w-.]*$") then
 end
 
 target=args[2]
-target=target and ("/"..target:match("^/?(.-)/?$").."/") or "/tmp/"..repo
+target=target and (target:match("^/?(.-)/?$")) or "/tmp/"..repo
 if filesystem.exists(target) then
   if not filesystem.isDirectory(target) then
     print("target directory already exists and is not a directory.")
@@ -86,20 +86,12 @@ end
 local function gitContents(repo,dir)
   print("fetching contents for "..repo..dir)
   local url="https://api.github.com/repos/"..repo.."/contents"..dir
-  local result,response=pcall(internet.request,url)
   local raw=""
   local files={}
   local directories={}
-
-  if result then
-    for chunk in response do
-      raw=raw..chunk
-    end
-  else
-    error("you've been cut off. Serves you right.")
+  for chunk in network.request(url) do
+    raw=raw..chunk
   end
-
-  response=nil
   raw=raw:gsub("%[","{"):gsub("%]","}"):gsub("(\".-\"):(.-[,{}])",function(a,b) return "["..a.."]="..b end)
   local t=load("return "..raw)()
 
