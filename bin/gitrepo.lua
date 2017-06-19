@@ -89,7 +89,7 @@ local function gitContents(repo,dir)
   local raw=""
   local files={}
   local directories={}
-  for chunk in network.request(url) do
+  for chunk in internet.request(url) do
     raw=raw..chunk
   end
   raw=raw:gsub("%[","{"):gsub("%]","}"):gsub("(\".-\"):(.-[,{}])",function(a,b) return "["..a.."]="..b end)
