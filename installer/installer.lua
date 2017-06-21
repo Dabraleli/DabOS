@@ -82,3 +82,4 @@ for i=1,#files do
   end
 end
 print("OS installed. Please, reboot")
+os.reboot()
