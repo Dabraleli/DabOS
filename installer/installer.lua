@@ -17,7 +17,7 @@ repo="Dabraleli/DabOS"
 target="/"
 
 local function gitContents(repo,dir)
-  print("fetching contents for "..repo..dir)
+  print("fetching contents for " .. string.sub(dir, string.find(dir, "/", 2)))
   local url="https://api.github.com/repos/"..repo.."/contents"..dir
   local raw=""
   local files={}
@@ -49,14 +49,14 @@ end
 local files,dirs=gitContents(repo,"/OS")
 
 for i=1,#dirs do
-  print("making dir "..target..dirs[i])
-  if filesystem.exists(target..dirs[i]) then
-    if not filesystem.isDirectory(target..dirs[i]) then
-      print("error: directory "..target..dirs[i].." blocked by file with the same name")
+  print("making dir "..dirs[i])
+  if filesystem.exists(dirs[i]) then
+    if not filesystem.isDirectory(dirs[i]) then
+      print("error: directory "..dirs[i].." blocked by file with the same name")
       return
     end
   else
-    filesystem.makeDirectory(target..dirs[i])
+    filesystem.makeDirectory(dirs[i])
   end
 end
 
@@ -73,8 +73,8 @@ for i=1,#files do
     for chunk in response do       
     	raw=raw..chunk
     end
-    print("writing to "..target..files[i])
-    local file=io.open(target..files[i],"w")
+    print("writing to "..files[i])
+    local file=io.open(files[i],"w")
     file:write(raw)
     file:close()
   else
