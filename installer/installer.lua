@@ -66,7 +66,6 @@ for i=1,#files do
   local replace=nil
   if filesystem.exists(target..files[i]) then
       filesystem.remove(target..files[i])
-    end
   end
   print("downloading "..files[i])
   local url="https://raw.github.com/"..repo.."/master"..files[i]
