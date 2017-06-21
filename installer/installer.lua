@@ -1,6 +1,6 @@
 local fs = require("filesystem")
 
-print("Cloning repo...")
+print("Клонирование репозитория...")
 
 local internet=require("internet")
 local text=require("text")
@@ -17,8 +17,8 @@ repo="Dabraleli/DabOS"
 target="/"
 
 local function gitContents(repo,dir)
-  print("fetching contents for " .. string.sub(dir, string.find(dir, "/", 2)))
   local url="https://api.github.com/repos/"..repo.."/contents"..dir
+  dir = dir .. "/"
   local raw=""
   local files={}
   local directories={}
@@ -30,9 +30,9 @@ local function gitContents(repo,dir)
 
   for i=1,#t do
     if t[i].type=="dir" then
-      table.insert(directories,dir.."/"..t[i].name)
+      table.insert(directories,dir..t[i].name)
 
-      local subfiles,subdirs=gitContents(repo,dir.."/"..t[i].name)
+      local subfiles,subdirs=gitContents(repo,dir..t[i].name)
       for i=1,#subfiles do
         table.insert(files,subfiles[i])
       end
@@ -40,19 +40,20 @@ local function gitContents(repo,dir)
         table.insert(directories,subdirs[i])
       end
     else
-      files[#files+1]=dir.."/"..t[i].name
+      files[#files+1]=dir..t[i].name
     end
   end
   return files, directories
 end
 
 local files,dirs=gitContents(repo,"/OS")
+print("Чтение директорий")
 
 for i=1,#dirs do
-  print("making dir "..dirs[i])
+  print("Создание директории "..dirs[i])
   if filesystem.exists(dirs[i]) then
     if not filesystem.isDirectory(dirs[i]) then
-      print("error: directory "..dirs[i].." blocked by file with the same name")
+      print("Ошибка: директория "..dirs[i].." блокируется файлом с тем же именем")
       return
     end
   else
@@ -65,7 +66,7 @@ for i=1,#files do
   if filesystem.exists(target..files[i]) then
       filesystem.remove(target..files[i])
   end
-  print("downloading "..files[i])
+  print("Загрузка "..files[i])
   local url="https://raw.github.com/"..repo.."/master"..files[i]
   local result,response=pcall(internet.request,url)
   if result then
@@ -73,13 +74,14 @@ for i=1,#files do
     for chunk in response do       
     	raw=raw..chunk
     end
-    print("writing to "..files[i])
+    print("Сохранение "..files[i])
     local file=io.open(files[i],"w")
     file:write(raw)
     file:close()
   else
-    print("failed, skipping")
+    print("Ошибка, пропуск файла")
   end
 end
-print("OS installed. Please, reboot")
-os.reboot()
+print("ОС установлена")
+print("Через секунду компьютер будет перезагружен")
+os.sleep(1)
