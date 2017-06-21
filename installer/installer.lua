@@ -10,7 +10,6 @@ local term=require("term")
 local event=require("event")
 local keyboard=require("keyboard")
 
-
 local repo,target
 
 repo="Dabraleli/DabOS"
@@ -47,7 +46,7 @@ local function gitContents(repo,dir)
   return files, directories
 end
 
-local files,dirs=gitContents(repo,"OS")
+local files,dirs=gitContents(repo,"/OS")
 
 for i=1,#dirs do
   print("making dir "..target..dirs[i])
