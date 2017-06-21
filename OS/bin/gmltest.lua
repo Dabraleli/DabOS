@@ -8,13 +8,13 @@ local component=require("component")
 local gui=gml.create("center","center",32,19)
 
 local label=gui:addLabel("center",2,13,"Hello, World!")
-label:hide()
 
 
 local textField=gui:addTextField("center",4,18)
 
 local function toggleLabel()
   label.text = textField.text
+  label:draw()
 end
 
 local button1=gui:addButton(4,6,10,1,"Toggle",toggleLabel)
