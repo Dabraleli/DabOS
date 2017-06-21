@@ -53,7 +53,6 @@ print("Загрузка json библиотеки")
 local jsonPath = "/cache/system_update/json.lua"
 filesystem.makeDirectory(filesystem.path(jsonPath))
 loadfile("/bin/wget.lua")("https://github.com/rxi/json.lua/raw/master/json.lua", jsonPath, "-fq")
-json = loadfile(jsonPath)
 
 print("Проверка лимита")
 local url = "https://api.github.com/rate_limit"
@@ -61,7 +60,7 @@ raw = ""
 for chunk in internet.request(url) do
   raw = raw..chunk
 end
-jsonData = json.encode(raw)
+jsonData = loadfile(jsonPath).encode(raw)
 print(jsonData["resources"]["rate"]["remaining"])
  
 local files,dirs=gitContents(repo,"/OS")
