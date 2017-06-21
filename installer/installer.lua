@@ -44,7 +44,6 @@ local function gitContents(repo,dir)
       files[#files+1]=dir.."/"..t[i].name
     end
   end
-
   return files, directories
 end
 
