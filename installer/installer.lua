@@ -16,6 +16,8 @@ repo="Dabraleli/DabOS"
  
 target="/"
  
+local json = nil
+
 local function gitContents(repo,dir)
   local url="https://api.github.com/repos/"..repo.."/contents"..dir
   print(url)
@@ -46,18 +48,21 @@ local function gitContents(repo,dir)
   end
   return files, directories
 end
- 
- 
+
+print("Загрузка json библиотеки")
+local jsonPath = "/cache/system_update/json.lua"
+filesystem.makeDirectory(filesystem.path(jsonPath))
+loadfile("/bin/wget.lua")("https://github.com/rxi/json.lua/raw/master/json.lua", jsonPath, "-fq")
+json = loadfile(jsonPath)
+
 print("Проверка лимита")
 local url = "https://api.github.com/rate_limit"
 raw = ""
 for chunk in internet.request(url) do
   raw = raw..chunk
 end
-raw=raw:gsub("%[","{"):gsub("%]","}"):gsub("(\".-\"):(.-[,{}])",function(a,b) return "["..a.."]="..b end)
-local t=load("return "..raw)()
-print(t.resources.rate.remaining)
- 
+jsonData = json.encode(raw)
+print(jsonData["resources"]["rate"]["remaining"])
  
 local files,dirs=gitContents(repo,"/OS")
 print("Чтение директорий")
