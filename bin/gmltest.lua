@@ -18,7 +18,7 @@ local function toggleLabel()
 end
 
 local button1=gui:addButton(4,6,10,1,"Toggle",toggleLabel)
-local button2=gui:addButton(-4,6,10,1,"Close",gui.close)
+local button2=gui:addButton(-4,6,10,1,"Clos",gui.close)
 
 gui:addHandler("key_down",
   function(event,addy,char,key)

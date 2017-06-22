@@ -24,14 +24,47 @@ local function getCurrentCommit()
   return jsonData["sha"]
 end
 
+local function updateCommitInfo(time, sha)
+  local file=io.open("/cache/system_update/current_version", "w")
+  local jsonData = {}
+  jsonData["time"] = time
+  jsonData["sha"] = sha
+  file:write(json.encode(jsonData))
+  file:close()
+end
+
+
 local function getChanges()
-  local url="https://api.github.com/repos/Dabraleli/DabOS/compare/" .. getCurrentCommit() .. "... " .. getLastCommit()
+  local url="https://api.github.com/repos/Dabraleli/DabOS/compare/" .. getCurrentCommit() .. "..." .. getLastCommit()
   local raw=""
   for chunk in internet.request(url) do
     raw=raw..chunk
   end
   local t=json.decode(raw)
-  print(json.decode(t["files"]))
+  local files = t["files"]
+  for i = 1, #files do
+    if files[i]["type"] == "modified" then
+      filesystem.remove("/"..files[i]["filename"])
+      local result,response=pcall(internet.request,files[i]["raw_url"])
+      if result then
+        local rawF=""
+        for chunkF in response do      
+          rawF=rawF..chunkF
+        end
+        print("Сохранение ".."/"..files[i]["filename"])
+        local fileD=io.open("/"..files[i]["filename"],"w")
+        fileD:write(rawF)
+        fileD:close()
+      else
+        print("Ошибка, пропуск файла")
+      end
+    else if files[i]["type"] == "removed" then
+      filesystem.remove("/"..files[i]["filename"])
+      end
+    end
+  end
+  updateCommitInfo(os.time(), getLastCommit())
+  print("Обновление завершено")
 end
 
 local function checkLimit()
