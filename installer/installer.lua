@@ -9,14 +9,13 @@ local keyboard=require("keyboard")
 local json = nil
 
 local function getLastCommit()
-	local url="https://api.github.com/repos/Dabraleli/DabOS/commits"
-  	local raw=""
-  	for chunk in internet.request(url) do
-    	raw=raw..chunk
-  	end
-  	print(raw)
-  	local t=json.decode(raw)
-  	return t[1]["sha"]
+  local url="https://api.github.com/repos/Dabraleli/DabOS/commits"
+    local raw=""
+    for chunk in internet.request(url) do
+      raw=raw..chunk
+    end
+    local t=json.decode(raw)
+    return t[1]["sha"]
 end
 
 local function gitContents(repo, dir)
@@ -49,53 +48,51 @@ local function gitContents(repo, dir)
 end
 
 local function getJsonLib()
-	print("Загрузка json библиотеки")
-	local jsonPath = "/cache/system_update/json.lua"
-	filesystem.makeDirectory(filesystem.path(jsonPath))
-	loadfile("/bin/wget.lua")("https://github.com/rxi/json.lua/raw/master/json.lua", jsonPath, "-fq")
-	json = dofile(jsonPath)
+  print("Загрузка json библиотеки")
+  local jsonPath = "/cache/system_update/json.lua"
+  filesystem.makeDirectory(filesystem.path(jsonPath))
+  loadfile("/bin/wget.lua")("https://github.com/rxi/json.lua/raw/master/json.lua", jsonPath, "-fq")
+  json = dofile(jsonPath)
 end
 
 local function checkLimit()
-	print("Проверка лимита")
-	local url = "https://api.github.com/rate_limit"
-	raw = ""
-	for chunk in internet.request(url) do
-  		raw = raw..chunk
-	end
-	jsonData = json.decode(raw)
-	if jsonData["rate"]["remaining"] < 5 then
-  		print("Исчерпан лимит запросов к API, подождите пару минут")
-	end
+  print("Проверка лимита")
+  local url = "https://api.github.com/rate_limit"
+  raw = ""
+  for chunk in internet.request(url) do
+      raw = raw..chunk
+  end
+  jsonData = json.decode(raw)
+  if jsonData["rate"]["remaining"] < 5 then
+      print("Исчерпан лимит запросов к API, подождите пару минут")
+  end
 end
 
 print("Клонирование репозитория...") 
 getJsonLib()
-os.sleep(0.1)
 checkLimit()
-os.sleep(0.1)
 print("Установка ОС версии " .. getLastCommit())
-local files,dirs=gitContents(repo,"/OS")
+local files,dirs=gitContents(repo,"/")
 print("Чтение директорий")
 
 for i=1,#dirs do
-  print("Создание директории "..string.sub(dirs[i], 4))
-  if filesystem.exists(string.sub(dirs[i], 4)) then
-    if not filesystem.isDirectory(string.sub(dirs[i], 4)) then
-      print("Ошибка: директория "..string.sub(dirs[i], 4).." блокируется файлом с тем же именем")
+  print("Создание директории "..dirs[i])
+  if filesystem.exists(dirs[i]) then
+    if not filesystem.isDirectory(dirs[i]) then
+      print("Ошибка: директория "..dirs[i].." блокируется файлом с тем же именем")
       return
     end
   else
-    filesystem.makeDirectory(string.sub(dirs[i], 4))
+    filesystem.makeDirectory(dirs[i])
   end
 end
 os.sleep(0.1)
 for i=1,#files do
   local replace=nil
-  if filesystem.exists(string.sub(files[i], 4)) then
-      filesystem.remove(string.sub(files[i], 4))
+  if filesystem.exists(files[i]) then
+      filesystem.remove(files[i])
   end
-  print("Загрузка "..string.sub(files[i], 4))
+  print("Загрузка "..files[i])
   local url="https://raw.github.com/Dabraleli/DabOS/master"..files[i]
   local result,response=pcall(internet.request,url)
   if result then
@@ -103,8 +100,8 @@ for i=1,#files do
     for chunk in response do      
       raw=raw..chunk
     end
-    print("Сохранение "..string.sub(files[i], 4))
-    local file=io.open(string.sub(files[i], 4),"w")
+    print("Сохранение "..files[i])
+    local file=io.open(files[i],"w")
     file:write(raw)
     file:close()
   else
