@@ -72,7 +72,7 @@ print("Клонирование репозитория...")
 getJsonLib()
 checkLimit()
 print("Установка ОС версии " .. getLastCommit())
-local files,dirs=gitContents(repo,"/")
+local files,dirs=gitContents(repo,"")
 print("Чтение директорий")
 
 for i=1,#dirs do
@@ -116,7 +116,10 @@ local file=io.open("/cache/system_update/current_version","w")
 file:write(json.encode(update_info))
 file:close()
 
-print("ОС установлена, версия " .. sha)
+print("Перемещение json.lua")
+os.execute("mv /cache/system_update/json.lua /lib/json.lua")
+
+print("ОС установлена, версия " .. update_info["sha"])
 print("Перезагрузить? [Y/n] ")
 if ((io.read() or "n").."y"):match("^%s*[Yy]") then
   print("Перезагрузка!")
