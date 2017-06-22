@@ -14,8 +14,9 @@ local function getLastCommit()
   	for chunk in internet.request(url) do
     	raw=raw..chunk
   	end
+  	print(raw)
   	local t=json.decode(raw)
-  	return t[0]["sha"]
+  	return t[1]["sha"]
 end
 
 local function gitContents(repo, dir)
@@ -70,7 +71,10 @@ end
 
 print("Клонирование репозитория...") 
 getJsonLib()
+os.sleep(0.1)
 checkLimit()
+os.sleep(0.1)
+print("Установка ОС версии " .. getLastCommit())
 local files,dirs=gitContents(repo,"/OS")
 print("Чтение директорий")
 
@@ -85,14 +89,14 @@ for i=1,#dirs do
     filesystem.makeDirectory(string.sub(dirs[i], 4))
   end
 end
- 
+os.sleep(0.1)
 for i=1,#files do
   local replace=nil
   if filesystem.exists(string.sub(files[i], 4)) then
       filesystem.remove(string.sub(files[i], 4))
   end
   print("Загрузка "..string.sub(files[i], 4))
-  local url="https://raw.github.com/"..repo.."/master"..files[i]
+  local url="https://raw.github.com/Dabraleli/DabOS/master"..files[i]
   local result,response=pcall(internet.request,url)
   if result then
     local raw=""
@@ -108,12 +112,16 @@ for i=1,#files do
   end
 end
 
-sha = getLastCommit()
+update_info = {}
+update_info["sha"] = getLastCommit()
+update_info["time"] = os.time()
 local file=io.open("/cache/system_update/current_version","w")
-file:write(sha)
+file:write(json.encode(update_info))
 file:close()
 
 print("ОС установлена, версия " .. sha)
-print("Через секунду компьютер будет перезагружен")
-os.sleep(1)
-require("computer").shutdown(true)
+print("Перезагрузить? [Y/n] ")
+if ((io.read() or "n").."y"):match("^%s*[Yy]") then
+  print("Перезагрузка!")
+  computer.shutdown(true)
+end

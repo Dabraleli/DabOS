@@ -47,42 +47,6 @@ else
   end
 end
 
-
-
--- this isn't acually used, but it is tested and works on decoding the base64 encoded data that github
---sends for some queries, leaving it in here for possible future/related use, might be able to pull
---and display difs and things like that?
-local symb="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-
-function decode64(text)
-  local val,bits=0,0
-  local output=""
-  for ch in text:gmatch(".") do
-    if symb:find(ch) then
-      --print("ch "..ch.."-> "..(symb:find(ch)-1))
-      val=bit32.lshift(val,6)+symb:find(ch)-1
-    else
-      print(ch.."?")
-      return
-    end
-    bits=bits+6
-    --print("bits : "..bits)
-    --print(string.format("val : 0x%04x",val))
-    if bits>=8 then
-      local och=unicode.char(bit32.rshift(val,bits-8))
-      --print("os<<"..och)
-      --print("& with "..(2^(bits-8)-1))
-      val=bit32.band(val,2^(bits-8)-1)
-      bits=bits-8
-      --print(string.format("val : 0x%04x",val))
-      output=output..och
-    end
-  end
-  return output
-end
-
-
-
 local function gitContents(repo,dir)
   print("fetching contents for "..repo..dir)
   local url="https://api.github.com/repos/"..repo.."/contents"..dir
